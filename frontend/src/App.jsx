@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import ProtectedRoute from './components/ProtectedRoute';
-import Layout from './components/Layout'; // Import Layout
+import Layout from './components/Layout'; 
+import 'leaflet/dist/leaflet.css';
+
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));

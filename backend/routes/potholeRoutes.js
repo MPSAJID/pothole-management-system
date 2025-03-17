@@ -5,7 +5,7 @@ const roleMW = require('../middleware/roleMW');
 const { reportPothole, getPotholes, updateStatus } = require('../controllers/potholeController');
 
 router.get('/', authMW, getPotholes);
-router.post('/', authMW,roleMW(['citizen', 'admin']), reportPothole);
+router.post('/report', authMW,roleMW(['citizen', 'admin']), reportPothole);
 router.put('/:id/status', authMW,roleMW(['admin', 'Worker']), updateStatus);
 
 module.exports = router;

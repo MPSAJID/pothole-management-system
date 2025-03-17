@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getNotifications } from '../services/notificationService';
-import Navbar from '../components/Navbar';
+import { getUserNotifications } from '../services/notificationService';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -10,7 +9,7 @@ const Notifications = () => {
   }, []);
 
   const fetchNotifications = async () => {
-    const res = await getNotifications();
+    const res = await getUserNotifications();
     setNotifications(res.data);
   };
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { giveFeedback } from '../services/feedbackService';
+import { addFeedback } from '../services/feedbackService';
 import Navbar from '../components/Navbar';
 
 const Feedback = () => {
@@ -7,7 +7,7 @@ const Feedback = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await giveFeedback(form);
+    await addFeedback(form);
     alert('Feedback submitted successfully!');
   };
 
