@@ -60,7 +60,7 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
     formData.append('image', data.image);
     formData.append('reported_by',data.req.user.id)
 
-    try {
+try {
       await reportPothole(formData);
       toast.success('Pothole reported successfully!');
       reset();
