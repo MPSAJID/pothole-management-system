@@ -1,24 +1,37 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import Dashboard from './pages/Dashboard';
-import ReportPothole from './pages/PotholeReportPage';
-import Repairs from './pages/RepairPage';
-import Feedback from './pages/FeedbackPage';
-import Notifications from './pages/NotificationPage';
+import { lazy, Suspense } from 'react';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout'; // Import Layout
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const ReportPothole = lazy(() => import('./pages/PotholeReportPage'));
+const Repairs = lazy(() => import('./pages/RepairPage'));
+const Feedback = lazy(() => import('./pages/FeedbackPage'));
+const Notifications = lazy(() => import('./pages/NotificationPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/potholes" element={<ReportPothole />} />
-        <Route path="/repairs" element={<Repairs />} />
-        <Route path="/feedback" element={<Feedback />} />
-        <Route path="/notifications" element={<Notifications />} />
-      </Routes>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin-login" element={<AdminLoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Protected Routes wrapped in Layout */}
+          <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/potholes" element={<ReportPothole />} />
+            <Route path="/repairs" element={<Repairs />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/notifications" element={<Notifications />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </Router>
   );
 };

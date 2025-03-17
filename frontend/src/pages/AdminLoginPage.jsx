@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { login } from '../services/authService';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const AdminLoginPage = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
@@ -33,14 +33,14 @@ const LoginPage = () => {
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded-lg p-8 space-y-4 w-full max-w-sm"
       >
-        <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-4 text-red-600">Admin Login</h2>
 
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Admin Email"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="w-full p-3 border rounded focus:outline-none focus:ring focus:ring-green-300"
+          className="w-full p-3 border rounded focus:outline-none focus:ring focus:ring-red-300"
           required
         />
 
@@ -49,29 +49,19 @@ const LoginPage = () => {
           placeholder="Password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="w-full p-3 border rounded focus:outline-none focus:ring focus:ring-green-300"
+          className="w-full p-3 border rounded focus:outline-none focus:ring focus:ring-red-300"
           required
         />
 
         <button 
           type="submit"
-          className="w-full bg-green-600 text-white p-3 rounded hover:bg-green-700 transition"
+          className="w-full bg-red-600 text-white p-3 rounded hover:bg-red-700 transition"
         >
-          Login
+          Admin Login
         </button>
-
-        {/* Links */}
-        <div className="text-center space-y-2 mt-4">
-          <p>
-            Not registered? <Link to="/register" className="text-green-600 hover:underline">Register</Link>
-          </p>
-          <p>
-            Admin? <Link to="/admin-login" className="text-red-600 hover:underline">Login as Admin</Link>
-          </p>
-        </div>
       </form>
     </div>
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;
