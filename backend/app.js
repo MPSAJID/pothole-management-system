@@ -9,8 +9,12 @@ const feedbackRoutes = require('./routes/feedbackRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+
+app.use(cors({
+    origin: process.env.FE_URL, // Set this in .env
+    credentials: true
+  }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/potholes', potholeRoutes);
@@ -18,5 +22,10 @@ app.use('/api/repairs', repairRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+
+app.use((req, res, next) => {
+    res.status(404).json({ error: 'Route not found' });
+  });
+  
 module.exports = app;
 

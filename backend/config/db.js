@@ -1,7 +1,6 @@
 //@ts-nocheck
 const {Pool} = require('pg');
 require('dotenv').config();
-const { connectionString, ssl, database, password, host } = require('pg/lib/defaults');
 DB_URL = process.env.DB_URL;
 
 
@@ -12,6 +11,11 @@ const pool = new Pool({
     password:process.env.DB_PASSWORD,
     port:process.env.DB_PORT
 
+});
+
+pool.on('error', (err) => {
+    console.error('Unexpected error on idle client', err);
+    process.exit(-1);
 });
 
 
