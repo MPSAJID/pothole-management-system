@@ -6,7 +6,7 @@ const Pothole = {
     const query = `
       INSERT INTO potholes 
       (description, image_url, latitude, longitude, severity, status, reported_by)
-      VALUES ($1, $2, $3, $4, $5, 'Pending', $6)
+      VALUES ($1, $2, $3, $4, $5, 'reported', $6)
       RETURNING *;
     `;
     db.query(

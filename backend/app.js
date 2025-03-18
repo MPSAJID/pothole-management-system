@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+const app = express();
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -8,13 +8,15 @@ const repairRoutes = require('./routes/repairRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 
-const app = express();
-app.use(express.json());
 
+const cors = require('cors');
 app.use(cors({
-    origin: process.env.FE_URL, // Set this in .env
-    credentials: true
-  }));
+  origin: process.env.FE_URL, // Set this in .env
+  credentials: true
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/potholes', potholeRoutes);

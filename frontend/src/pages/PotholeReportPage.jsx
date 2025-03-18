@@ -40,14 +40,14 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImagePreview(URL.createObjectURL(file));
-      setValue('image', file);
+        setImagePreview(URL.createObjectURL(file));
+        setValue('image', file, { shouldValidate: true }); // Ensure validation triggers
     }
-  };
+};
 
   // Form submission
   const onSubmit = async (data) => {
-    if (!data.image) {
+    if (!data.image || !(data.image instanceof File)) {
       toast.error('Please upload an image!');
       return;
     }
@@ -57,20 +57,19 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
     formData.append('latitude', data.latitude);
     formData.append('longitude', data.longitude);
     formData.append('severity', data.severity);
-    formData.append('image', data.image);
-    formData.append('reported_by',data.req.user.id)
+    formData.append('image', data.image); // Ensure image is included
 
-try {
-      await reportPothole(formData);
-      toast.success('Pothole reported successfully!');
-      reset();
-      setImagePreview(null);
-      setMarker(null);
+    try {
+        await reportPothole(formData);
+        toast.success('Pothole reported successfully!');
+        reset();
+        setImagePreview(null);
+        setMarker(null);
     } catch (error) {
-      console.error(error);
-      toast.error('Failed to report pothole. Try again!');
+        console.error("Upload error:", error);
+        toast.error(error.response?.data?.error || "Failed to report pothole!");
     }
-  };
+};
 
   return (
     <>
