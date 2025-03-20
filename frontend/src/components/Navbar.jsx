@@ -39,7 +39,8 @@ const Navbar = () => {
         {role === 'citizen' && (
           <>
             <Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link>
-            <Link to="/potholes" className="hover:text-gray-300">Report Pothole</Link>
+            <Link to="/potholes/report" className="hover:text-gray-300">Report Pothole</Link>
+            <Link to="/potholes/" className="hover:text-gray-300">View Potholes</Link>
             <Link to="/feedback" className="hover:text-gray-300">Feedback</Link>
             <Link to="/notifications" className="hover:text-gray-300">Notifications</Link>
           </>

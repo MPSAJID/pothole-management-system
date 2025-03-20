@@ -55,6 +55,22 @@ exports.getPotholes = (req, res) => {
   });
 };
 
+exports.getPotholeinfo = (req,res) => {
+  
+    const potholeId = req.params.id;
+  
+    Pothole.getPotholeinfo(potholeId, (err, result) => {
+      if (err) {
+        console.error("Error fetching pothole:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Pothole not found" });
+      }
+      res.json(result.rows[0]);
+    });
+};
+
 exports.updateStatus = (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

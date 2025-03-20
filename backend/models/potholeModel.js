@@ -25,7 +25,41 @@ const Pothole = {
 
   // Get all potholes
   getAllPotholes: (callback) => {
-    db.query('SELECT * FROM potholes ORDER BY reported_at DESC', [], callback);
+    const query = `
+      SELECT 
+        p.pothole_id, 
+        p.description, 
+        p.image_url, 
+        p.latitude, 
+        p.longitude, 
+        p.severity, 
+        p.status, 
+        p.reported_at, 
+        u.name AS reported_by 
+      FROM potholes p
+      LEFT JOIN users u ON p.reported_by = u.user_id
+      ORDER BY p.reported_at DESC;
+    `;
+    db.query(query, [], callback);
+  },
+
+  getPotholeinfo:(id,callback) => {
+    const query = `
+    SELECT 
+      p.pothole_id, 
+      p.description, 
+      p.image_url, 
+      p.latitude, 
+      p.longitude, 
+      p.severity, 
+      p.status, 
+      p.reported_at, 
+      u.name AS reported_by 
+    FROM potholes p
+    LEFT JOIN users u ON p.reported_by = u.user_id
+    WHERE p.pothole_id = $1;
+  `;
+  db.query(query, [id], callback);
   },
 
   // Update pothole status (e.g., to "In Progress", "Resolved")

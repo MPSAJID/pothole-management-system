@@ -13,6 +13,8 @@ const Feedback = lazy(() => import('./pages/FeedbackPage'));
 const Notifications = lazy(() => import('./pages/NotificationPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
+const Potholes = lazy(() => import('./pages/Potholes'));
+const Potholeinfo = lazy(() => import('./pages/Potholeinfo'));
 
 const App = () => {
   return (
@@ -27,9 +29,11 @@ const App = () => {
           {/* Protected Routes wrapped in Layout */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/potholes" element={<ReportPothole />} />
             <Route path="/repairs" element={<Repairs />} />
             <Route path="/feedback" element={<Feedback />} />
+            <Route path="/potholes" element={<Potholes/>}/>
+            <Route path="/potholes/:id" element={<Potholeinfo/>}/>
+            <Route path="/potholes/report" element={<ReportPothole />} />
             <Route path="/notifications" element={<Notifications />} />
           </Route>
         </Routes>
