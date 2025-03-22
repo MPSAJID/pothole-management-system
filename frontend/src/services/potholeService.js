@@ -13,4 +13,11 @@ export const getPotholeinfo = async (id) => {
       return null;
     }
   };
-export const updatePotholeStatus = (id, data) => api.put(`/potholes/update/${id}`, data);
+export const updatePotholeStatus = async (id, data) => {
+  try {
+    const response = await api.put(`/potholes/${id}/status`, data);
+    return response.data;
+  }catch(error){
+    console.error("error updating status : ",error);
+  }
+};

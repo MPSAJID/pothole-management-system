@@ -9,6 +9,6 @@ const { upload } = require('../config/cloudinary');
 router.get('/', authMW,getPotholes);
 router.get('/:id', authMW,getPotholeinfo);
 router.post('/report', authMW,upload.single('image'), reportPothole);
-router.put('/:id/status', authMW,roleMW(['admin', 'Worker']), updateStatus);
+router.put('/:id/status', authMW,roleMW(['admin']), updateStatus);
 
 module.exports = router;

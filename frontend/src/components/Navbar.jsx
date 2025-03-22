@@ -23,12 +23,12 @@ const Navbar = () => {
             <Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link>
             <Link to="/repairs" className="hover:text-gray-300">Repairs</Link>
             <Link to="/notifications" className="hover:text-gray-300">Notifications</Link>
-            <Link to="/potholes" className="hover:text-gray-300">Report Pothole</Link>
+            <Link to="/potholes" className="hover:text-gray-300">view Potholes</Link>
             <Link to="/feedback" className="hover:text-gray-300">Feedback</Link>
           </>
         )}
 
-        {role === 'engineer' && (
+        {role === 'worker' && (
           <>
             <Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link>
             <Link to="/repairs" className="hover:text-gray-300">Repairs</Link>

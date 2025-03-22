@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getPotholeinfo, /*updatePotholeStatus, addComment*/ } from "../services/potholeService";
+import { getPotholeinfo, updatePotholeStatus, /*addComment*/ } from "../services/potholeService";
 
 const Potholeinfo = () => {
   console.log("PotholeDetail Component Loaded!");
@@ -36,15 +36,18 @@ const Potholeinfo = () => {
     }
   }, [id]);
 
-  // const handleStatusUpdate = async () => {
-  //   try {
-  //     await updatePotholeStatus(id, status);
-  //     alert("Status updated successfully");
-  //   } catch (error) {
-  //     console.error("Error updating status:", error);
-  //   }
-  // };
-
+  const handleStatusUpdate = async () => {
+    try {
+      await updatePotholeStatus(id, { status });
+      setPothole((prev) => ({
+        ...prev,
+        status: status,
+      }));
+      alert("Status updated successfully");
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
   // const handleAddComment = async () => {
   //   try {
   //     await addComment(id, comment);
@@ -56,6 +59,11 @@ const Potholeinfo = () => {
   // };
 
   if (!pothole) return <p>Loading...</p>;
+
+  const userRole = localStorage.getItem("role") || "user";
+  console.log(`User Role: ${userRole}`);
+
+
 
   // Custom marker icon for pothole location
   const potholeIcon = new Icon({
@@ -108,13 +116,24 @@ const Potholeinfo = () => {
             <p className="text-red-500 mt-4">No location data available.</p>
           )}
 
-         {/* Status Update Section */}
-          {/* <div className="mt-4">
-            <label className="block text-sm font-medium">Update Status</label>
-            <Input value={status} onChange={(e) => setStatus(e.target.value)} className="mt-2" />
+          {/* Show Update Status only for Admin */}
+          {userRole === "admin" && (
+            <div>
+            <label className="block text-gray-700 mb-2 font-semibold">Update Status</label>
+            <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            >
+              <option value="reported">reported</option>
+              <option value="in progress">in progress</option>
+              <option value="repaired">repaired</option>
+              <option value="rejected">rejected</option>
+            </select>
             <Button onClick={handleStatusUpdate} className="mt-2">Update</Button>
-          </div> */}
-
+          </div>
+          )}
+          
           {/* Comment Section */}
           {/* <div className="mt-4">
             <label className="block text-sm font-medium">Add Comment</label>

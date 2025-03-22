@@ -51,6 +51,10 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
       toast.error('Please upload an image!');
       return;
     }
+const potholeIcon = new Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+    iconSize: [32, 32],
+  });
 
     const formData = new FormData();
     formData.append('description', data.description);
@@ -116,7 +120,7 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution="&copy; OpenStreetMap contributors"
                 />
-                <LocationMarker />
+                <LocationMarker icon={potholeIcon}/>
               </MapContainer>
             </div>
 
