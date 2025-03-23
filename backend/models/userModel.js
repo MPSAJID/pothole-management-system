@@ -7,7 +7,22 @@ const User = {
   },
   getUserByEmail: (email, callback) => {
     db.query('SELECT * FROM users WHERE email = $1', [email], callback);
+  },
+
+
+  getWorkers: ( callback) => {
+    db.query('SELECT * FROM users WHERE role = $1',['worker'], callback);
+  },
+
+
+  getWorkerById: (id, callback) => {
+    let query = 'SELECT * FROM users WHERE role = $1 AND user_id = $2';
+    const params = ['worker',id];
+    
+    
+    db.query(query, params, callback);
   }
 };
+
 
 module.exports = User;

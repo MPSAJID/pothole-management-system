@@ -4,11 +4,21 @@ import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 import 'leaflet/dist/leaflet.css';
 import { reportPothole } from '../services/potholeService';
-
 import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Custom marker icon
+const customMarkerIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // Custom pothole icon
+  iconSize: [32, 32],
+  iconAnchor: [16, 32], // Center the icon properly
+  popupAnchor: [0, -32],
+  shadowUrl: markerShadow,
+  shadowSize: [41, 41],
+  shadowAnchor: [13, 41],
+});
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -18,7 +28,7 @@ L.Icon.Default.mergeOptions({
 
 const center = [12.9716, 77.5946]; // Default location (Bangalore example)
 
- const ReportPothole = () => {
+const ReportPothole = () => {
   const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
   const [imagePreview, setImagePreview] = useState(null);
   const [marker, setMarker] = useState(null);
@@ -33,17 +43,19 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
       },
     });
 
-    return marker ? <Marker position={marker}></Marker> : null;
+    return marker ? (
+      <Marker position={marker} icon={customMarkerIcon} />
+    ) : null;
   }
 
   // Image preview handler
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-        setImagePreview(URL.createObjectURL(file));
-        setValue('image', file, { shouldValidate: true }); // Ensure validation triggers
+      setImagePreview(URL.createObjectURL(file));
+      setValue('image', file, { shouldValidate: true }); // Ensure validation triggers
     }
-};
+  };
 
   // Form submission
   const onSubmit = async (data) => {
@@ -51,40 +63,34 @@ const center = [12.9716, 77.5946]; // Default location (Bangalore example)
       toast.error('Please upload an image!');
       return;
     }
-const potholeIcon = new Icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-    iconSize: [32, 32],
-  });
 
     const formData = new FormData();
     formData.append('description', data.description);
     formData.append('latitude', data.latitude);
     formData.append('longitude', data.longitude);
     formData.append('severity', data.severity);
-    formData.append('image', data.image); // Ensure image is included
+    formData.append('image', data.image);
 
     try {
-        await reportPothole(formData);
-        toast.success('Pothole reported successfully!');
-        reset();
-        setImagePreview(null);
-        setMarker(null);
+      await reportPothole(formData);
+      toast.success('Pothole reported successfully!');
+      reset();
+      setImagePreview(null);
+      setMarker(null);
     } catch (error) {
-        console.error("Upload error:", error);
-        toast.error(error.response?.data?.error || "Failed to report pothole!");
+      console.error("Upload error:", error);
+      toast.error(error.response?.data?.error || "Failed to report pothole!");
     }
-};
+  };
 
   return (
     <>
       <Toaster position="top-center" />
-      
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
           <h2 className="text-3xl font-bold text-center text-green-600 mb-6">Report a Pothole</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            
             {/* Description */}
             <div>
               <label className="block text-gray-700 mb-2 font-semibold">Description</label>
@@ -120,7 +126,7 @@ const potholeIcon = new Icon({
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution="&copy; OpenStreetMap contributors"
                 />
-                <LocationMarker icon={potholeIcon}/>
+                <LocationMarker />
               </MapContainer>
             </div>
 
@@ -155,6 +161,5 @@ const potholeIcon = new Icon({
     </>
   );
 };
-
 
 export default ReportPothole;

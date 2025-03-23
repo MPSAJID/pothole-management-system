@@ -12,7 +12,8 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const cors = require('cors');
 app.use(cors({
   origin: process.env.FE_URL, // Set this in .env
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
 app.use(express.json());

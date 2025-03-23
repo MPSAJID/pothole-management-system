@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getPotholeinfo, updatePotholeStatus, addFeedback,  } from "../services/potholeService";
+import { getPotholeinfo, updatePotholeStatus } from "../services/potholeService";
+import { addFeedback, getFeedback } from "../services/feedbackService";
 
 const Potholeinfo = () => {
   const { id } = useParams();
@@ -17,14 +18,20 @@ const Potholeinfo = () => {
   const [rating, setRating] = useState(null);
   const [comments, setComments] = useState("");
 
+ // Fetch feedbacks
+const fetchFeedbackData = async () => {
+  try {
+    const data = await getFeedback(id); // ✅ Directly assign the returned data
+    console.log("Fetched Feedback:", data);
+    setFeedbacks(data); // ✅ Set the state properly
+  } catch (error) {
+    console.error("Error fetching feedback:", error);
+  }
+};
 
-  useEffect(() => {
-    if (id) {
-      fetchFeedbackData();
-    }
-  }, [id]);
 
-  
+
+  // Fetch pothole info
   useEffect(() => {
     if (id) {
       getPotholeinfo(id)
@@ -33,9 +40,11 @@ const Potholeinfo = () => {
           setStatus(data.status);
         })
         .catch((error) => console.error("Error fetching pothole:", error));
+      fetchFeedbackData(); // Fetch feedback after getting pothole info
     }
   }, [id]);
 
+  // Handle status update
   const handleStatusUpdate = async () => {
     try {
       await updatePotholeStatus(id, { status });
@@ -46,14 +55,20 @@ const Potholeinfo = () => {
     }
   };
 
+  // Handle feedback submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const feedbackData = {
+      pothole_id: id,
+      comments,
+      rating,
+    };
     try {
-      await addFeedback(id, { rating, comments }); // Call your feedback service
+      await addFeedback(feedbackData);
       setComments("");
       setRating(null);
       alert("Feedback added successfully");
-      fetchFeedbackData();
+      fetchFeedbackData(); // Refresh feedback after submission
     } catch (error) {
       console.error("Error adding feedback:", error);
     }
@@ -81,12 +96,16 @@ const Potholeinfo = () => {
           <p className="text-gray-600">Severity: {pothole.severity}</p>
           <p className="text-gray-600">Status: {pothole.status || "Unknown"}</p>
           <p className="text-gray-600">
-            Location: {pothole.latitude && pothole.longitude
+            Location:{" "}
+            {pothole.latitude && pothole.longitude
               ? `${pothole.latitude}, ${pothole.longitude}`
               : "Not Available"}
           </p>
           <p className="text-gray-500 text-sm">
-            Reported on: {pothole.reported_at ? new Date(pothole.reported_at).toLocaleDateString() : "Not Available"}
+            Reported on:{" "}
+            {pothole.reported_at
+              ? new Date(pothole.reported_at).toLocaleDateString()
+              : "Not Available"}
           </p>
 
           {/* Map Section */}
@@ -94,15 +113,19 @@ const Potholeinfo = () => {
             <div className="mt-4">
               <h3 className="text-lg font-bold mb-2">Pothole Location</h3>
               <MapContainer
-                center={[parseFloat(pothole.latitude), parseFloat(pothole.longitude)]}
+                center={[
+                  parseFloat(pothole.latitude),
+                  parseFloat(pothole.longitude),
+                ]}
                 zoom={15}
                 style={{ height: "300px", width: "100%", borderRadius: "10px" }}
               >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <Marker
-                  position={[parseFloat(pothole.latitude), parseFloat(pothole.longitude)]}
+                  position={[
+                    parseFloat(pothole.latitude),
+                    parseFloat(pothole.longitude),
+                  ]}
                   icon={potholeIcon}
                 >
                   <Popup>Pothole Location</Popup>
@@ -116,16 +139,18 @@ const Potholeinfo = () => {
           {/* Show Update Status only for Admin */}
           {userRole === "admin" && (
             <div>
-              <label className="block text-gray-700 mb-2 font-semibold">Update Status</label>
+              <label className="block text-gray-700 mb-2 font-semibold">
+                Update Status
+              </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
               >
-                <option value="reported">reported</option>
-                <option value="in progress">in progress</option>
-                <option value="repaired">repaired</option>
-                <option value="rejected">rejected</option>
+                <option value="reported">Reported</option>
+                <option value="in progress">In Progress</option>
+                <option value="repaired">Repaired</option>
+                <option value="rejected">Rejected</option>
               </select>
               <Button onClick={handleStatusUpdate} className="mt-2">
                 Update
@@ -135,25 +160,6 @@ const Potholeinfo = () => {
 
           {/* Feedback Section */}
           <div>
-            <h3 className="font-bold text-lg mt-4">Feedback</h3>
-            {feedbacks.length === 0 ? (
-              <p className="text-gray-500">No feedback available.</p>
-            ) : (
-              feedbacks.map((f) => (
-                <div key={f.feedback_id} className="p-2 my-2 border rounded">
-                  <p>
-                    <strong>{f.user?.name || "Anonymous"}:</strong> {f.comments}
-                  </p>
-
-                  {/* Show rating only if status is "repaired" or "rejected" */}
-                  {["repaired", "rejected"].includes(pothole.status) && (
-                    <p>Rating: {f.rating} / 5</p>
-                  )}
-                  <small>{new Date(f.created_at).toLocaleString()}</small>
-                </div>
-              ))
-            )}
-
             <h3 className="font-bold text-lg mt-4">Add Feedback</h3>
             <form onSubmit={handleSubmit} className="my-2">
               {["repaired", "rejected"].includes(pothole.status) && (
@@ -179,6 +185,23 @@ const Potholeinfo = () => {
               <br />
               <Button type="submit">Submit</Button>
             </form>
+
+            <h3 className="font-bold text-lg mt-4">Feedback</h3>
+            {feedbacks && feedbacks.length > 0 ? (
+              feedbacks.map((f) => (
+                <div key={f.feedback_id} className="p-2 my-2 border rounded">
+                  <p>
+                    <strong>{f.user_name || "Anonymous"}:</strong> {f.comments}
+                  </p>
+                  {["repaired", "rejected"].includes(pothole.status) && (
+                    <p>Rating: {f.rating} / 5</p>
+                  )}
+                  <small>{new Date(f.created_at).toLocaleString()}</small>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No feedback available.</p>
+            )}
           </div>
         </CardContent>
       </Card>
