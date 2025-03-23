@@ -7,65 +7,62 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getPotholeinfo, updatePotholeStatus, /*addComment*/ } from "../services/potholeService";
+import { getPotholeinfo, updatePotholeStatus, addFeedback,  } from "../services/potholeService";
 
 const Potholeinfo = () => {
-  console.log("PotholeDetail Component Loaded!");
-
   const { id } = useParams();
-  console.log("Pothole ID from URL:", id);
-
   const [pothole, setPothole] = useState(null);
   const [status, setStatus] = useState("");
-  const [comment, setComment] = useState("");
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [rating, setRating] = useState(null);
+  const [comments, setComments] = useState("");
+
 
   useEffect(() => {
-    console.log("useEffect triggered with ID:", id);
-
     if (id) {
-      console.log("Calling getPotholeinfo...");
+      fetchFeedbackData();
+    }
+  }, [id]);
+
+  
+  useEffect(() => {
+    if (id) {
       getPotholeinfo(id)
         .then((data) => {
-          console.log("Fetched Data:", data);
           setPothole(data);
           setStatus(data.status);
         })
         .catch((error) => console.error("Error fetching pothole:", error));
-    } else {
-      console.error("Pothole ID is undefined");
     }
   }, [id]);
 
   const handleStatusUpdate = async () => {
     try {
       await updatePotholeStatus(id, { status });
-      setPothole((prev) => ({
-        ...prev,
-        status: status,
-      }));
+      setPothole((prev) => ({ ...prev, status }));
       alert("Status updated successfully");
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
-  // const handleAddComment = async () => {
-  //   try {
-  //     await addComment(id, comment);
-  //     setComment("");
-  //     alert("Comment added successfully");
-  //   } catch (error) {
-  //     console.error("Error adding comment:", error);
-  //   }
-  // };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await addFeedback(id, { rating, comments }); // Call your feedback service
+      setComments("");
+      setRating(null);
+      alert("Feedback added successfully");
+      fetchFeedbackData();
+    } catch (error) {
+      console.error("Error adding feedback:", error);
+    }
+  };
 
   if (!pothole) return <p>Loading...</p>;
 
   const userRole = localStorage.getItem("role") || "user";
-  console.log(`User Role: ${userRole}`);
 
-
-
-  // Custom marker icon for pothole location
   const potholeIcon = new Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
     iconSize: [32, 32],
@@ -119,27 +116,70 @@ const Potholeinfo = () => {
           {/* Show Update Status only for Admin */}
           {userRole === "admin" && (
             <div>
-            <label className="block text-gray-700 mb-2 font-semibold">Update Status</label>
-            <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            >
-              <option value="reported">reported</option>
-              <option value="in progress">in progress</option>
-              <option value="repaired">repaired</option>
-              <option value="rejected">rejected</option>
-            </select>
-            <Button onClick={handleStatusUpdate} className="mt-2">Update</Button>
-          </div>
+              <label className="block text-gray-700 mb-2 font-semibold">Update Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="reported">reported</option>
+                <option value="in progress">in progress</option>
+                <option value="repaired">repaired</option>
+                <option value="rejected">rejected</option>
+              </select>
+              <Button onClick={handleStatusUpdate} className="mt-2">
+                Update
+              </Button>
+            </div>
           )}
-          
-          {/* Comment Section */}
-          {/* <div className="mt-4">
-            <label className="block text-sm font-medium">Add Comment</label>
-            <Textarea value={comment} onChange={(e) => setComment(e.target.value)} className="mt-2" />
-            <Button onClick={handleAddComment} className="mt-2">Submit</Button>
-          </div> */}
+
+          {/* Feedback Section */}
+          <div>
+            <h3 className="font-bold text-lg mt-4">Feedback</h3>
+            {feedbacks.length === 0 ? (
+              <p className="text-gray-500">No feedback available.</p>
+            ) : (
+              feedbacks.map((f) => (
+                <div key={f.feedback_id} className="p-2 my-2 border rounded">
+                  <p>
+                    <strong>{f.user?.name || "Anonymous"}:</strong> {f.comments}
+                  </p>
+
+                  {/* Show rating only if status is "repaired" or "rejected" */}
+                  {["repaired", "rejected"].includes(pothole.status) && (
+                    <p>Rating: {f.rating} / 5</p>
+                  )}
+                  <small>{new Date(f.created_at).toLocaleString()}</small>
+                </div>
+              ))
+            )}
+
+            <h3 className="font-bold text-lg mt-4">Add Feedback</h3>
+            <form onSubmit={handleSubmit} className="my-2">
+              {["repaired", "rejected"].includes(pothole.status) && (
+                <div>
+                  <label>Rating:</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={rating || ""}
+                    onChange={(e) => setRating(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+              <br />
+              <label>Comments:</label>
+              <Textarea
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+                required
+              />
+              <br />
+              <Button type="submit">Submit</Button>
+            </form>
+          </div>
         </CardContent>
       </Card>
     </div>

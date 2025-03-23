@@ -16,6 +16,7 @@ const LoginPage = () => {
       if (res.token && res.role) {
         localStorage.setItem('token', res.token);
         localStorage.setItem('role', res.role);   
+        localStorage.setItem('user_id', res.user_id);   
         alert('Login successful!');
         navigate('/dashboard');
       } else {
