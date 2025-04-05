@@ -7,6 +7,15 @@ const Repair = {
   },
   getRepairs: (callback) => {
     db.query('SELECT * FROM repairs', [], callback);
+  },
+  updateRepairStatus: (repair_id, repair_status, imageUrl, callback) => {
+    const query = `
+      UPDATE repairs 
+      SET repair_status = $1, 
+          image_url = COALESCE($2, image_url)
+      WHERE repair_id = $3
+      RETURNING *`;
+    db.query(query, [repair_status, imageUrl, repair_id], callback);
   }
 };
 

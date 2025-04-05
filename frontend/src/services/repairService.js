@@ -23,3 +23,6 @@ export const getWorkerById = async (id) => {
   }
 };
 
+export const updateRepairStatus = (repair_id, formData) => {
+  return api.put(`/repairs/${repair_id}/status`, formData);
+};

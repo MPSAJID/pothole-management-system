@@ -42,3 +42,21 @@ exports.getAllFeedbackByPotholeId = (pothole_id, callback) => {
     }
   });
 };
+
+exports.getWorkerandReporter = (pothole_id,callback) => {
+  const query = `SELECT p.reported_by, r.worker_id
+  FROM potholes p
+  LEFT JOIN repairs r ON r.pothole_id = p.pothole_id
+  WHERE p.pothole_id = $1`;
+
+  const values = [pothole_id];
+  db.query(query, values, (err, results) => {
+    if (err) {
+      console.error('Error fetching ids:', err);
+      callback(err, null);
+    } else {
+      console.log('Database Query Result:', results.rows);
+      callback(null, results.rows);
+    }
+  });
+}

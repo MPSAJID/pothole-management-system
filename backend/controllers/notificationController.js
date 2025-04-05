@@ -1,17 +1,32 @@
 const Notification = require('../models/notificationModel');
+const io = require('../app');
+const { getSocketId } = require('../utils/socketUtils'); 
+exports.addNotification = async (req, res) => {
+  const { user_id, message } = req.body;
 
-exports.addNotification = (req, res) => {
-  const notification = req.body;
-  Notification.addNotification(notification, (err, result) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json(result.rows[0]);
-  });
+  try {
+    const result = await Notification.addNotification(user_id, message);
+    const notification = result.rows[0];
+
+    const socketId = getSocketId(user_id);
+    if (socketId) {
+      io.to(socketId).emit("newNotification", notification);
+    }
+
+    res.status(201).json(notification);
+  } catch (err) {
+    console.error('Error in addNotification:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
-exports.getNotifications = (req, res) => {
+exports.getUserNotifications = async (req, res) => {
   const { user_id } = req.params;
-  Notification.getUserNotifications(user_id, (err, result) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json(result.rows);
-  });
+  try {
+    const result = await Notification.getUserNotifications(user_id);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error('Error fetching notifications:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };

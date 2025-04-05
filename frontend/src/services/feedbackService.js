@@ -1,6 +1,7 @@
 import api from './api';
 
 export const addFeedback = (data) => api.post('/feedback/add', data);
+
 export const getFeedback = async (pothole_id) => {
     try {
       const response = await api.get(`/feedback/${pothole_id}`);
