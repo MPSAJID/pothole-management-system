@@ -1,4 +1,4 @@
-const io = require('../server');
+const io = require('../app');
 
 function getSocketId(userId) {
   return Array.from(io.sockets.sockets.values()).find(

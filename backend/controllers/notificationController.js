@@ -30,3 +30,13 @@ exports.getUserNotifications = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+exports.markNotificationAsRead = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Notification.markAsRead(id);
+    res.json({ message: "Marked as read" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

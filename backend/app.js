@@ -8,7 +8,7 @@ require('dotenv').config();
 const io = new Server(server, {
   cors: {
     origin: process.env.FE_URL, // Update with your frontend URL for security
-    methods: ["GET", "POST"]
+    credentials:true
   }
 });
 
@@ -62,6 +62,6 @@ app.use((req, res, next) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-module.exports = app;
-module.exports = io;
+module.exports = { app, io };
+
 
