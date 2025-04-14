@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-pink-200">
       <Navbar />
       <main className="p-4">
         <Outlet /> {/* This renders the matched child route */}

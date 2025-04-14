@@ -66,9 +66,9 @@ const LoginPage = () => {
           <p>
             Not registered? <Link to="/register" className="text-green-600 hover:underline">Register</Link>
           </p>
-          <p>
+         {/* <p>
             Admin? <Link to="/admin-login" className="text-red-600 hover:underline">Login as Admin</Link>
-          </p>
+          </p>*/}
         </div>
       </form>
     </div>
