@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { getPotholes } from "../services/potholeService";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/Select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/Dialog";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { getWorkers, assignWorker } from "../services/repairService";
 
 
