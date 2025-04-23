@@ -18,7 +18,7 @@ const Potholeinfo = lazy(() => import('./pages/Potholeinfo'));
 
 const App = () => {
   return (
-    <Router>
+    <Router basename='/login'>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           {/* Public Routes */}
