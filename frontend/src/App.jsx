@@ -15,6 +15,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
 const Potholes = lazy(() => import('./pages/Potholes'));
 const Potholeinfo = lazy(() => import('./pages/Potholeinfo'));
+const HomePage = lazy(() => import('./pages/HomePage'));
 
 const App = () => {
   return (
@@ -22,6 +23,8 @@ const App = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

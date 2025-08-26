@@ -5,9 +5,9 @@ const { cloudinary, uploadToCloudinary } = require('../config/cloudinary');
 
 exports.reportPothole = async (req, res) => {
   try {
-    console.log("Request received:", req.body);  // Log request body
-    console.log("File received:", req.file);    // Log file info
-    console.log("User ID:", req.user?.id);      // Log user ID
+    // console.log("Request received:", req.body);  // Log request body
+    // console.log("File received:", req.file);    // Log file info
+    // console.log("User ID:", req.user?.id);      // Log user ID
 
     const { description, latitude, longitude, severity } = req.body;
 
@@ -78,15 +78,26 @@ exports.getPotholeinfo = (req, res) => {
 exports.updateStatus = (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  Pothole.updateStatus(id, status, async (err, result) => {
+  Pothole.updateStatus(id, status, (err, result) => {
     if (err) return res.status(500).json({ error: 'Failed to update status' });
     if (result.rowCount === 0) return res.status(404).json({ message: 'Pothole not found' });
     res.json({ message: 'Status updated successfully', pothole: result.rows[0] });
 
-    const pothole = Pothole.getPotholeinfo(id); 
-    if (pothole.rows.length > 0) {
-      const reporterId = pothole.rows[0].reported_by;
-      await Notification.addNotification(reporterId, `Your reported pothole (ID: ${pothole.pothole_d}) status is now "${pothole.status}"`);
-    }
+    // Fetch pothole info and send notification asynchronously
+    Pothole.getPotholeinfo(id, async (err2, potholeResult) => {
+      if (!err2 && potholeResult && potholeResult.rowCount > 0) {
+        const reporterId = potholeResult.rows[0].reported_by;
+        const potholeId = potholeResult.rows[0].pothole_id;
+        const statusText = potholeResult.rows[0].status;
+        try {
+          await Notification.addNotification(
+            reporterId,
+            `Your reported pothole (ID: ${potholeId}) status is now "${statusText}"`
+          );
+        } catch (notifyErr) {
+          console.error('Failed to send notification:', notifyErr);
+        }
+      }
+    });
   });
 };
